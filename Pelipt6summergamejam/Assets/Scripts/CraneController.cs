@@ -22,7 +22,12 @@ public class CraneController : MonoBehaviour
     [SerializeField]
     private int containerVelocityDamper = 1; // This is used to decide how much velocity the falling container inherits from the swinging container.
 
-    private float horizontalMovement; // Currently used to simulate windForce.
+    // Used by ThisIsTheWind() function
+    Vector3 craneLoadPrevLoc = Vector3.zero;
+    Vector3 craneLoadCurrLoc = Vector3.zero;
+
+    // These will be used to control the cranes' position onscreen
+    private float horizontalMovement;
     private float verticalMovement;
 
     private bool canLoadNewContainer; // This is used to decide when player can drop the next container and when to show container hanging from the crane.
@@ -34,11 +39,6 @@ public class CraneController : MonoBehaviour
     public GameObject newContainer; // Container prefab goes here.
 
     public LineRenderer lineRenderer; // This draws the crane cable.
-
-
-
-    Vector3 craneLoadPrevLoc = Vector3.zero;
-    Vector3 craneLoadCurrLoc = Vector3.zero;
 
 
 
@@ -72,7 +72,7 @@ public class CraneController : MonoBehaviour
 
     void FixedUpdate()
     {
-        craneLoadRB.AddForce(transform.right * horizontalMovement * 10);
+        //craneLoadRB.AddForce(transform.right * horizontalMovement * 10); // This was used to emulate wind manually
     }
 
     IEnumerator ThisIsTheWind()
