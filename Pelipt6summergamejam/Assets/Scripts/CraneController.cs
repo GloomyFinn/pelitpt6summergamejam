@@ -6,7 +6,7 @@ public class CraneController : MonoBehaviour
 {
     public Rigidbody2D craneLoadRB; // Connect to Crane Load Rigidbody. Windforce affects this Rigidbody.
 
-
+    public GameObject theCrane; // Connect the whole crane GameObject here
 
     [SerializeField]
     private int windForce = 1;
@@ -16,8 +16,6 @@ public class CraneController : MonoBehaviour
 
     [SerializeField]
     private int windBlastMaxWaitForSec = 3;
-
-    private bool lastWindBlastDirectionWasRight = false;
 
     [SerializeField]
     private int containerVelocityDamper = 1; // This is used to decide how much velocity the falling container inherits from the swinging container.
@@ -30,11 +28,17 @@ public class CraneController : MonoBehaviour
     private float horizontalMovement;
     private float verticalMovement;
 
+    [SerializeField]
+    private float craneHorizontalMoveSpeed = 1f;
+
+    [SerializeField]
+    private float craneVerticalMoveSpeed = 1f;
+
     private bool canLoadNewContainer; // This is used to decide when player can drop the next container and when to show container hanging from the crane.
 
     // Line Renderer uses these two GameObjects to draw the crane cable.
     public GameObject craneTop;
-    public GameObject craneLoad;
+    public GameObject craneLoad; // craneLoad is also used to move crane vertically.
 
     public GameObject newContainer; // Container prefab goes here.
 
@@ -59,8 +63,7 @@ public class CraneController : MonoBehaviour
         {
             StartCoroutine(NewContainer());
         }
-
-
+        CraneMovementControls();
     }
 
     void LateUpdate()
@@ -70,9 +73,15 @@ public class CraneController : MonoBehaviour
         lineRenderer.SetPosition(1, craneLoad.transform.position);
     }
 
-    void FixedUpdate()
+
+    private void CraneMovementControls()
     {
-        //craneLoadRB.AddForce(transform.right * horizontalMovement * 10); // This was used to emulate wind manually
+        Vector3 craneHorizontalMovement = new Vector3(horizontalMovement, 0f, 0f);
+        theCrane.transform.position += craneHorizontalMovement * Time.deltaTime * craneHorizontalMoveSpeed;
+        theCrane.transform.position = new Vector3(Mathf.Clamp(theCrane.transform.position.x, -2f, 2f), theCrane.transform.position.y, theCrane.transform.position.z);
+
+        Vector3 craneVerticalMovement = new Vector3(0f, verticalMovement, 0f);
+        craneLoad.transform.position += craneVerticalMovement * Time.deltaTime * craneVerticalMoveSpeed;
     }
 
     IEnumerator ThisIsTheWind()
@@ -87,12 +96,10 @@ public class CraneController : MonoBehaviour
         if (craneLoadCurrLoc.x > 0)  // Wind blows from right
         {
             craneLoadRB.AddForce(transform.right * windFactor);
-            lastWindBlastDirectionWasRight = true;
         }
         else  // Wind blows from left
         {
             craneLoadRB.AddForce(transform.right * -windFactor);
-            lastWindBlastDirectionWasRight = false;
         }
 
         int windBlastTimer = Random.Range(windBlastMinWaitForSec, windBlastMaxWaitForSec);
