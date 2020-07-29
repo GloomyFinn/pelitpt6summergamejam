@@ -64,9 +64,6 @@ public class CraneController : MonoBehaviour
             StartCoroutine(NewContainer());
         }
         CraneMovementControls();
-
-        string test = ContainerFlowController.LoadContainerToCrane("i");
-        Debug.Log("load weight: " + test);
     }
 
     void LateUpdate()
